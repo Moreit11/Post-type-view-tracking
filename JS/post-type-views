@@ -1,0 +1,37 @@
+// Check if user has consent for statistics or marketing
+function hasConsentForStatisticsOrMarketing() {
+    // Check cookie or use Complianz functions to verify consent
+    const consentStatus = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('cmplz_statistics='))?.split('=')[1];
+    return consentStatus === 'allow';
+}
+
+// Track the recently viewed post
+function trackPostView(postId, postType) {
+    if (hasConsentForStatisticsOrMarketing()) {
+        let viewedPosts = JSON.parse(localStorage.getItem('recentlyViewedPosts')) || [];
+
+        if (!viewedPosts.includes(postId)) {
+            viewedPosts.push(postId);
+
+            // Limit the stored posts (e.g., store only the last 5 posts)
+            if (viewedPosts.length > 5) {
+                viewedPosts.shift(); // Remove the oldest viewed post
+            }
+
+            localStorage.setItem('recentlyViewedPosts', JSON.stringify(viewedPosts));
+
+            // Store the post IDs in a cookie to be used on the server side
+            const cookieValue = JSON.stringify(viewedPosts);
+            document.cookie = `recently_viewed_posts=${cookieValue}; path=/; Secure; HttpOnly; SameSite=Strict;`;
+        }
+    }
+}
+
+// Check the current post type and track it
+cmplz_run_after_all_consents_are_checked(function() {
+    if (typeof myPost !== 'undefined' && myPost.postId) {
+        trackPostView(myPost.postId, myPost.postType);
+    }
+});
