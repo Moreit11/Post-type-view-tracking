@@ -1,4 +1,4 @@
-# Complianz Recently Viewed Posts
+# Recently Viewed Posts tracker + Complianz Integration
 
 ## Description
 This WordPress plugin tracks and displays recently viewed posts while ensuring GDPR compliance with the Complianz plugin. It securely stores the post IDs in local storage and cookies, allowing users to see their recently viewed posts.
